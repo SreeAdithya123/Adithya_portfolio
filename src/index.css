@@ -1,0 +1,139 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --accent: #ff5c3d;
+    --accent-hover: #ff7a5f;
+    --bg: #050505;
+    --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    /* Lit (expanded/hovered) service-row surface — exact demo values */
+    --surface-lit: #cfc9bc;
+    --surface-lit-ink: #16150f;
+    --surface-lit-ink-soft: #2c2a22;
+
+    /* Default for the animated row rule (GSAP tweens this to 0 and back) */
+    --rule-scale: 1;
+  }
+
+  body {
+    background-color: var(--bg);
+    color: #f2efe9;
+    font-family: var(--font-sans);
+    overflow-x: hidden;
+  }
+}
+
+/* Custom animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Service rows — reverse-engineered from the production bundle
+   (.service-row + animated scaleX rule driven by --rule-scale)
+   ───────────────────────────────────────────────────────────── */
+.service-row {
+  --rule-scale: 1;
+}
+
+.service-row::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #fff3;
+  transform: scaleX(var(--rule-scale));
+  transform-origin: 0 50%;
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Stack marquee rows — exact demo behaviour (mask fade, pause
+   on hover/focus, seamless -50% loop)
+   ───────────────────────────────────────────────────────────── */
+.marquee-row {
+  --marquee-fade: 12%;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--marquee-fade),
+    #000 calc(100% - var(--marquee-fade)),
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent 0,
+    #000 var(--marquee-fade),
+    #000 calc(100% - var(--marquee-fade)),
+    transparent 100%
+  );
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: marquee var(--marquee-duration, 40s) linear infinite;
+  animation-direction: var(--marquee-direction, normal);
+}
+
+.marquee-row:hover .marquee-track,
+.marquee-row:focus-within .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translate(0);
+  }
+  to {
+    transform: translate(-50%);
+  }
+}
+
+/* Availability halo pulse (used by contact badge) */
+@keyframes halo {
+  0% {
+    opacity: 0.55;
+    transform: scale(1);
+  }
+  70%,
+  to {
+    opacity: 0;
+    transform: scale(2.6);
+  }
+}
+
+.animate-halo {
+  animation: halo 2.4s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+}
